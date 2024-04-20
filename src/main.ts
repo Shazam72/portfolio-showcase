@@ -1,9 +1,15 @@
-import { Scene, WebGLRenderer, PerspectiveCamera, Clock, AmbientLight } from "three";
+import {
+  Scene,
+  WebGLRenderer,
+  PerspectiveCamera,
+  Clock,
+  AmbientLight,
+} from "three";
 import "./style.css";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
-import group from "./gallery/galery-item";
-import Floor from "./floor";
+import portfolios from "./portfolios";
+import ground from "./ground";
 import gui from "./gui";
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 const SIZES = {
   WIDTH: innerWidth,
@@ -18,34 +24,32 @@ renderer.setSize(SIZES.WIDTH, SIZES.HEIGHT);
 
 const camera = new PerspectiveCamera(50, SIZES.WIDTH / SIZES.HEIGHT);
 scene.add(camera);
+// camera.position.set(0, 10, 23);
+const orbits = new OrbitControls(camera, canvas)
 camera.position.set(-20, 10, 50);
-// const orbitControls = new OrbitControls(camera, canvas);
-// orbitControls.enableDamping = true;
-gui.add(camera.position,"x")
-gui.add(camera.position,"y")
-gui.add(camera.position,"z")
+gui.add(camera.position, "x");
+gui.add(camera.position, "y");
+gui.add(camera.position, "z");
 
-const ambientLight = new AmbientLight()
-scene.add(ambientLight)
-gui.add(ambientLight,"intensity",0,100,0.01)
+const ambientLight = new AmbientLight();
+scene.add(ambientLight);
+gui.add(ambientLight, "intensity", 0, 100, 0.01);
 
-scene.add(group);
-scene.add(Floor)
-const clock = new Clock();
+scene.add(portfolios);
+scene.add(ground);
+// const clock = new Clock();
 const animate = () => {
-  // orbitControls.update();
-  const elapsedTime = clock.getElapsedTime() * 0.1;
-  group.rotation.y = elapsedTime;
-  // camera.lookAt(group.position)
+  // const elapsedTime = clock.getElapsedTime() * 0.1;
+  // portfolios.rotation.y = elapsedTime;
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 };
 
 window.addEventListener("keydown", (evt) => {
   if (evt.key == "ArrowUp") {
-    group.position.y--;
+    portfolios.position.y--;
   } else if (evt.key == "ArrowDown") {
-    group.position.y++;
+    portfolios.position.y++;
   }
 });
 

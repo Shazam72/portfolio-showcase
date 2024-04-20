@@ -1,6 +1,7 @@
 import {
-    BackSide,
+  Clock,
   CylinderGeometry,
+  DoubleSide,
   Group,
   Mesh,
   MeshBasicMaterial,
@@ -16,48 +17,60 @@ const cylinderGeoParams = {
   heightSegments: 1,
   openEnded: true,
   thetaStart: 0,
-  thetaLength: 2 * Math.PI,
+  thetaLength: Math.PI / 2.03,
 };
-const group = new Group();
+const portfolios = new Group();
+const portfolioItems: Group[] = [];
 const colors = ["red", "green", "blue", "purple"];
 
 const length = 3;
 console.time();
 
-const geometry = new CylinderGeometry(
+let geometry = new CylinderGeometry(
   cylinderGeoParams.radius,
   cylinderGeoParams.radius,
   cylinderGeoParams.height,
   cylinderGeoParams.radialSegments,
   cylinderGeoParams.heightSegments,
   cylinderGeoParams.openEnded,
-  0,
-  Math.PI / 2
+  cylinderGeoParams.thetaStart,
+  cylinderGeoParams.thetaLength
 );
 for (let y = 0; y < length; y++) {
-    const cylinderGroup = new Group();
+  const portfolioItem = new Group();
   for (let i = 0; i < 4; i++) {
-      const idx = Math.max(1, Math.floor(Math.random() * colors.length));
+    const idx = Math.max(1, Math.floor(Math.random() * colors.length));
     const texture = textureLoader.load(`/item${idx}.png`);
     texture.colorSpace = SRGBColorSpace;
     // texture.minFilter = NearestFilter
     // texture.generateMipmaps = false
-    texture.center.set(0.5, 0.5);
-    texture.flipY = false;
-    texture.rotation = Math.PI;
+    // texture.center.set(0.5, 0.5);
+    // texture.flipY = false;
+    // texture.rotation = Math.PI;
     const material = new MeshBasicMaterial({
-      side: BackSide,
-      map: texture
+      side: DoubleSide,
+      map: texture,
     });
     const mesh = new Mesh(geometry, material);
-    mesh.position.y = y * 10;
+
     mesh.rotation.y = (i * Math.PI) / 2;
-    cylinderGroup.add(mesh);
+    portfolioItem.add(mesh);
   }
-  cylinderGroup.rotation.y = Math.PI / 3 + Math.PI * Math.random();
-  group.add(cylinderGroup);
+  portfolioItem.position.y = y * (cylinderGeoParams.height + 0.3);
+  portfolioItem.rotation.y = Math.PI / 3 + Math.PI * Math.random();
+  portfolios.add(portfolioItem);
+  portfolioItems.push(portfolioItem);
 }
 console.timeEnd();
-group.position.y = 5
+portfolios.position.y = 5;
 
-export default group;
+const animate = () => {
+  const elapsed = 0.002;
+  portfolioItems.forEach((portfolioItem, idx) => {
+    portfolioItem.rotateY((idx % 2 == 0 ? -1 : 1) * elapsed);
+  });
+  requestAnimationFrame(animate);
+};
+animate();
+
+export default portfolios;
