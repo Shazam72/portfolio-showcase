@@ -1,13 +1,14 @@
-import { PlaneGeometry } from "three";
-import { Reflector } from "three/examples/jsm/Addons.js";
+import {
+  Mesh,
+  MeshStandardMaterial,
+  PlaneGeometry,
+} from "three";
 
-const groundMirror = new Reflector(new PlaneGeometry(30, 30), {
-  clipBias: 0.003,
-  textureWidth: window.innerWidth * window.devicePixelRatio,
-  textureHeight: window.innerHeight * window.devicePixelRatio,
-  
-});
-groundMirror.position.y = 0.5;
-groundMirror.rotateX(-Math.PI / 2);
+const ground = new Mesh(
+  new PlaneGeometry(300, 300),
+  new MeshStandardMaterial({ roughness: 0, metalness: 0 })
+);
+ground.position.y = 0.5;
+ground.rotateX(-Math.PI / 2);
 
-export default groundMirror;
+export default ground;

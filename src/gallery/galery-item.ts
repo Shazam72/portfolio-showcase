@@ -21,7 +21,7 @@ const cylinderGeoParams = {
 const group = new Group();
 const colors = ["red", "green", "blue", "purple"];
 
-const length = 5;
+const length = 3;
 console.time();
 
 const geometry = new CylinderGeometry(

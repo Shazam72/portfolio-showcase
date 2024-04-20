@@ -18,22 +18,25 @@ renderer.setSize(SIZES.WIDTH, SIZES.HEIGHT);
 
 const camera = new PerspectiveCamera(50, SIZES.WIDTH / SIZES.HEIGHT);
 scene.add(camera);
-camera.position.set(0, 5, 3);
-const orbitControls = new OrbitControls(camera, canvas);
-orbitControls.enableDamping = true;
+camera.position.set(-20, 10, 50);
+// const orbitControls = new OrbitControls(camera, canvas);
+// orbitControls.enableDamping = true;
+gui.add(camera.position,"x")
+gui.add(camera.position,"y")
+gui.add(camera.position,"z")
 
 const ambientLight = new AmbientLight()
 scene.add(ambientLight)
 gui.add(ambientLight,"intensity",0,100,0.01)
 
 scene.add(group);
-// scene.add(Floor)
+scene.add(Floor)
 const clock = new Clock();
 const animate = () => {
-  orbitControls.update();
+  // orbitControls.update();
   const elapsedTime = clock.getElapsedTime() * 0.1;
   group.rotation.y = elapsedTime;
-  camera.lookAt(group.position)
+  // camera.lookAt(group.position)
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 };
