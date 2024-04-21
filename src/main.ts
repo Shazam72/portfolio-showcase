@@ -1,10 +1,4 @@
-import {
-  Scene,
-  WebGLRenderer,
-  PerspectiveCamera,
-  Clock,
-  AmbientLight,
-} from "three";
+import { Scene, WebGLRenderer, PerspectiveCamera, AmbientLight } from "three";
 import "./style.css";
 import portfolios from "./portfolios";
 import ground from "./ground";
@@ -24,23 +18,19 @@ renderer.setSize(SIZES.WIDTH, SIZES.HEIGHT);
 
 const camera = new PerspectiveCamera(50, SIZES.WIDTH / SIZES.HEIGHT);
 scene.add(camera);
-// camera.position.set(0, 10, 23);
-const orbits = new OrbitControls(camera, canvas)
-camera.position.set(-20, 10, 50);
-gui.add(camera.position, "x");
-gui.add(camera.position, "y");
-gui.add(camera.position, "z");
+const orbitControls = new OrbitControls(camera, canvas);
+orbitControls.enableDamping = true;
+camera.position.set(0, 0, 3);
 
 const ambientLight = new AmbientLight();
 scene.add(ambientLight);
 gui.add(ambientLight, "intensity", 0, 100, 0.01);
 
 scene.add(portfolios);
+
 scene.add(ground);
-// const clock = new Clock();
 const animate = () => {
-  // const elapsedTime = clock.getElapsedTime() * 0.1;
-  // portfolios.rotation.y = elapsedTime;
+  orbitControls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 };
