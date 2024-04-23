@@ -5,14 +5,9 @@ import {
   AmbientLight,
   Vector2,
   Raycaster,
-  Mesh,
-  Group,
-  CylinderGeometry,
-  MeshBasicMaterial,
-  PlaneGeometry,
 } from "three";
 import "./style.css";
-import portfolios, { PortfolioCylinder, onPortfolioHover } from "./portfolios";
+import portfolios, { PortfolioCylinder } from "./portfolios";
 import gui from "./gui";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
@@ -27,7 +22,7 @@ const scene = new Scene();
 renderer.setPixelRatio(devicePixelRatio);
 renderer.setSize(SIZES.WIDTH, SIZES.HEIGHT);
 
-const camera = new PerspectiveCamera(50, SIZES.WIDTH / SIZES.HEIGHT);
+const camera = new PerspectiveCamera(30, SIZES.WIDTH / SIZES.HEIGHT);
 scene.add(camera);
 const d = new OrbitControls(camera, canvas);
 d.enableDamping = true;

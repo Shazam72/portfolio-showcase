@@ -4,31 +4,31 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
-  NearestFilter,
   PlaneGeometry,
   SRGBColorSpace,
   TextureLoader,
 } from "three";
 import { getPortfolioLinks } from "./getPortfolioLink";
-import gui from "./gui";
 
 export type PortfolioCylinder = Mesh<CylinderGeometry, MeshBasicMaterial>;
 
 const textureLoader = new TextureLoader().setPath("portfolios/");
+const yOffset = 4;
+const xOffset = 8;
 const cylinderGeoParams = {
   radius: 12,
-  height: 10,
+  height: yOffset,
   radialSegments: 10,
   heightSegments: 1,
   openEnded: true,
   thetaStart: 0,
-  thetaLength: Math.PI / 2.03,
+  thetaLength: Math.PI / 4.12,
 };
 const portfolios = new Group();
 const portfolioItems: Group[] = [];
 
 const portfolioInfos = await getPortfolioLinks();
-const length = portfolioInfos.length / 4;
+const length = portfolioInfos.length / xOffset;
 console.time();
 
 let cylinderGeo = new CylinderGeometry(
@@ -46,11 +46,11 @@ const btnMat = new MeshBasicMaterial({
   color: 0xff0fff,
   side: DoubleSide,
   transparent: true,
-  opacity: 0.5
+  opacity: 0.5,
 });
 for (let y = 0; y < length; y++) {
   const portfolioItem = new Group();
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < xOffset; i++) {
     const idx = y * 4 + i;
 
     const material = new MeshBasicMaterial({
@@ -58,8 +58,8 @@ for (let y = 0; y < length; y++) {
     });
     const cylinder = new Mesh(cylinderGeo, material);
     const btn = new Mesh(btnGeo, btnMat);
-    btn.position.set(8.4, 0, 8.4);
-    btn.rotateY(Math.PI / 4);
+    btn.position.set(16.8, 0, 16.8);
+    btn.rotateY(Math.PI / xOffset);
     const cylinderGroup = new Group();
     cylinderGroup.userData.isCylinderGroup = true;
     btn.visible = false;
@@ -73,7 +73,7 @@ for (let y = 0; y < length; y++) {
     texture.rotation = Math.PI;
     cylinder.material.map = texture;
     cylinder.name = `item-${y}-${i}`;
-    cylinderGroup.rotation.y = (i * Math.PI) / 2;
+    cylinderGroup.rotation.y = (2 * (i * Math.PI)) / xOffset;
     portfolioItem.add(cylinderGroup);
   }
   portfolioItem.position.y = y * (cylinderGeoParams.height + 0.3);
@@ -87,7 +87,7 @@ portfolios.position.y = 5;
 const animate = () => {
   const elapsed = 0.002;
   portfolioItems.forEach((portfolioItem, idx) => {
-    // portfolioItem.rotateY((idx % 2 == 0 ? -1 : 1) * elapsed);
+    portfolioItem.rotateY((idx % 2 == 0 ? -1 : 1) * elapsed);
   });
   requestAnimationFrame(animate);
 };
