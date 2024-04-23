@@ -59,11 +59,11 @@ window.addEventListener("keydown", (evt) => {
 
 const pointer = new Vector2();
 const raycaster = new Raycaster();
+
 canvas.addEventListener("mousemove", (evt) => {
   pointer.x = (evt.clientX / innerWidth - 0.5) * 2;
   pointer.y = (0.5 - evt.clientY / innerHeight) * 2;
   raycaster.setFromCamera(pointer, camera);
-  portfolios.children;
   const intersected = raycaster.intersectObject(portfolios, true)[0]?.object;
   portfolios.children.forEach((portfolioItem) => {
     portfolioItem.children.forEach((cylinderGroup) => {
@@ -79,16 +79,19 @@ canvas.addEventListener("mousemove", (evt) => {
     });
   });
 });
-
-// canvas.addEventListener("click", (evt) => {
-//   pointer.x = (evt.clientX / innerWidth - 0.5) * 2;
-//   pointer.y = (0.5 - evt.clientY / innerHeight) * 2;
-//   raycaster.setFromCamera(pointer, camera);
-//   portfolios.children;
-//   const intersect = raycaster.intersectObject(portfolios, true)[0];
-//   if (intersect && intersect.object.isMesh){
-//     window.open(intersect.object.userData.link,"_blank")
-//   }
-// });
+canvas.addEventListener("click", (evt) => {
+  pointer.x = (evt.clientX / innerWidth - 0.5) * 2;
+  pointer.y = (0.5 - evt.clientY / innerHeight) * 2;
+  raycaster.setFromCamera(pointer, camera);
+  const intersected = raycaster.intersectObject(portfolios, true)[0]?.object;
+  portfolios.children.forEach((portfolioItem) => {
+    portfolioItem.children.forEach((cylinderGroup) => {
+      const btn = cylinderGroup.children[1] as PortfolioCylinder;
+      if (intersected?.id == btn?.id) {
+        window.open(btn.userData.link, "_blank");
+      }
+    });
+  });
+});
 
 animate();

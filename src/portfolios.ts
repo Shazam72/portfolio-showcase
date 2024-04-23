@@ -60,9 +60,6 @@ for (let y = 0; y < length; y++) {
     const btn = new Mesh(btnGeo, btnMat);
     btn.position.set(8.4, 0, 8.4);
     btn.rotateY(Math.PI / 4);
-    gui.add(btn.position, "x", -50, 50, 0.1);
-    gui.add(btn.position, "z", -50, 50, 0.1);
-    gui.add(btn.rotation, "y", 0, Math.PI * 2, 0.1);
     const cylinderGroup = new Group();
     cylinderGroup.userData.isCylinderGroup = true;
     btn.visible = false;
