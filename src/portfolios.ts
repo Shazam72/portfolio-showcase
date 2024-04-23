@@ -1,13 +1,16 @@
 import {
   CylinderGeometry,
   DoubleSide,
-  Group,  Mesh,
+  Group,
+  Mesh,
   MeshBasicMaterial,
+  NearestFilter,
   SRGBColorSpace,
   TextureLoader,
 } from "three";
+import { getPortfolioLinks } from "./getPortfolioLink";
 
-const textureLoader = new TextureLoader();
+const textureLoader = new TextureLoader().setPath("portfolios/");
 const cylinderGeoParams = {
   radius: 12,
   height: 10,
@@ -19,9 +22,9 @@ const cylinderGeoParams = {
 };
 const portfolios = new Group();
 const portfolioItems: Group[] = [];
-const colors = ["red", "green", "blue", "purple"];
 
-const length = 3;
+const portfolioInfos = await getPortfolioLinks();
+const length = portfolioInfos.length / 4;
 console.time();
 
 let geometry = new CylinderGeometry(
@@ -37,23 +40,20 @@ let geometry = new CylinderGeometry(
 for (let y = 0; y < length; y++) {
   const portfolioItem = new Group();
   for (let i = 0; i < 4; i++) {
-    const idx = Math.max(1, Math.floor(Math.random() * colors.length));
-    const texture = textureLoader.load(`/item${idx}.png`);
-    texture.colorSpace = SRGBColorSpace;
-    // texture.minFilter = NearestFilter
-    // texture.generateMipmaps = false
-    // texture.center.set(0.5, 0.5);
-    // texture.flipY = false;
-    // texture.rotation = Math.PI;
+    const idx = y * 4 + i;
+
     const material = new MeshBasicMaterial({
       side: DoubleSide,
-      map: texture,
     });
     const mesh = new Mesh(geometry, material);
-    mesh.name=`item-${y}-${i}`
-    mesh.addEventListener("click", (evt) => {
-      console.log(evt);
-    });
+    mesh.userData = { ...portfolioInfos[idx] };
+    const texture = textureLoader.load(portfolioInfos[idx].img);
+    texture.colorSpace = SRGBColorSpace;
+    texture.center.set(0.5, 0.5);
+    texture.flipY = false;
+    texture.rotation = Math.PI;
+    mesh.material.map = texture;
+    mesh.name = `item-${y}-${i}`;
     mesh.rotation.y = (i * Math.PI) / 2;
     portfolioItem.add(mesh);
   }
