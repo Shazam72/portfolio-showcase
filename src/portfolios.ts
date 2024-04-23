@@ -1,9 +1,7 @@
 import {
-  Clock,
   CylinderGeometry,
   DoubleSide,
-  Group,
-  Mesh,
+  Group,  Mesh,
   MeshBasicMaterial,
   SRGBColorSpace,
   TextureLoader,
@@ -52,7 +50,10 @@ for (let y = 0; y < length; y++) {
       map: texture,
     });
     const mesh = new Mesh(geometry, material);
-
+    mesh.name=`item-${y}-${i}`
+    mesh.addEventListener("click", (evt) => {
+      console.log(evt);
+    });
     mesh.rotation.y = (i * Math.PI) / 2;
     portfolioItem.add(mesh);
   }
@@ -72,5 +73,16 @@ const animate = () => {
   requestAnimationFrame(animate);
 };
 animate();
+
+export const onPortfolioHover = (
+  mesh: Mesh<CylinderGeometry, MeshBasicMaterial>
+) => {
+  mesh.material.color.set("gray");
+};
+export const onPortfolioHoverEnd = (
+  mesh: Mesh<CylinderGeometry, MeshBasicMaterial>
+) => {
+  mesh.material.color.set("");
+};
 
 export default portfolios;

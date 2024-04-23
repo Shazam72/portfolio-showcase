@@ -1,7 +1,13 @@
-import { Scene, WebGLRenderer, PerspectiveCamera, AmbientLight } from "three";
+import {
+  Scene,
+  WebGLRenderer,
+  PerspectiveCamera,
+  AmbientLight,
+  Vector2,
+  Raycaster,
+} from "three";
 import "./style.css";
-import portfolios from "./portfolios";
-import ground from "./ground";
+import portfolios, { onPortfolioHover } from "./portfolios";
 import gui from "./gui";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
@@ -18,9 +24,13 @@ renderer.setSize(SIZES.WIDTH, SIZES.HEIGHT);
 
 const camera = new PerspectiveCamera(50, SIZES.WIDTH / SIZES.HEIGHT);
 scene.add(camera);
-const orbitControls = new OrbitControls(camera, canvas);
-orbitControls.enableDamping = true;
+const d = new OrbitControls(camera, canvas);
+d.enableDamping = true;
 camera.position.set(0, 0, 3);
+d.update();
+gui.add(camera.position, "x", -100, 100, 0.5);
+gui.add(camera.position, "y", -100, 100, 0.5);
+gui.add(camera.position, "z", -100, 100, 0.5);
 
 const ambientLight = new AmbientLight();
 scene.add(ambientLight);
@@ -28,9 +38,8 @@ gui.add(ambientLight, "intensity", 0, 100, 0.01);
 
 scene.add(portfolios);
 
-scene.add(ground);
 const animate = () => {
-  orbitControls.update();
+  d.update();
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 };
@@ -41,6 +50,24 @@ window.addEventListener("keydown", (evt) => {
   } else if (evt.key == "ArrowDown") {
     portfolios.position.y++;
   }
+});
+
+const pointer = new Vector2();
+const raycaster = new Raycaster();
+canvas.addEventListener("mousemove", (evt) => {
+  pointer.x = (evt.clientX / innerWidth - 0.5) * 2;
+  pointer.y = (0.5 - evt.clientY / innerHeight) * 2;
+  raycaster.setFromCamera(pointer, camera);
+  portfolios.children;
+  const intersect = raycaster.intersectObject(portfolios, true)[0];
+  portfolios.traverse((portfolio) => {
+    if (portfolio.type != "Mesh") return;
+    if (intersect && intersect.object.name == portfolio.name) {
+      intersect.object.material.color.set("gray");
+    } else {
+      portfolio.material.color.set("white");
+    }
+  });
 });
 
 animate();
