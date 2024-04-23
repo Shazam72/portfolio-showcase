@@ -5,9 +5,14 @@ import {
   AmbientLight,
   Vector2,
   Raycaster,
+  Mesh,
+  Group,
+  CylinderGeometry,
+  MeshBasicMaterial,
+  PlaneGeometry,
 } from "three";
 import "./style.css";
-import portfolios, { onPortfolioHover } from "./portfolios";
+import portfolios, { PortfolioCylinder, onPortfolioHover } from "./portfolios";
 import gui from "./gui";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
@@ -59,15 +64,31 @@ canvas.addEventListener("mousemove", (evt) => {
   pointer.y = (0.5 - evt.clientY / innerHeight) * 2;
   raycaster.setFromCamera(pointer, camera);
   portfolios.children;
-  const intersect = raycaster.intersectObject(portfolios, true)[0];
-  portfolios.traverse((portfolio) => {
-    if (portfolio.type != "Mesh") return;
-    if (intersect && intersect.object.name == portfolio.name) {
-      intersect.object.material.color.set("gray");
-    } else {
-      portfolio.material.color.set("white");
-    }
+  const intersected = raycaster.intersectObject(portfolios, true)[0]?.object;
+  portfolios.children.forEach((portfolioItem) => {
+    portfolioItem.children.forEach((cylinderGroup) => {
+      const cylinder = cylinderGroup.children[0] as PortfolioCylinder;
+      const btn = cylinderGroup.children[1] as PortfolioCylinder;
+      if (intersected?.id == cylinder.id || intersected?.id == btn?.id) {
+        cylinder.material && cylinder.material.color.set("gray");
+        btn && (btn.visible = true);
+      } else {
+        cylinder.material && cylinder.material.color.set("white");
+        btn && (btn.visible = false);
+      }
+    });
   });
 });
+
+// canvas.addEventListener("click", (evt) => {
+//   pointer.x = (evt.clientX / innerWidth - 0.5) * 2;
+//   pointer.y = (0.5 - evt.clientY / innerHeight) * 2;
+//   raycaster.setFromCamera(pointer, camera);
+//   portfolios.children;
+//   const intersect = raycaster.intersectObject(portfolios, true)[0];
+//   if (intersect && intersect.object.isMesh){
+//     window.open(intersect.object.userData.link,"_blank")
+//   }
+// });
 
 animate();

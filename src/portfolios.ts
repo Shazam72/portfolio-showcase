@@ -5,10 +5,14 @@ import {
   Mesh,
   MeshBasicMaterial,
   NearestFilter,
+  PlaneGeometry,
   SRGBColorSpace,
   TextureLoader,
 } from "three";
 import { getPortfolioLinks } from "./getPortfolioLink";
+import gui from "./gui";
+
+export type PortfolioCylinder = Mesh<CylinderGeometry, MeshBasicMaterial>;
 
 const textureLoader = new TextureLoader().setPath("portfolios/");
 const cylinderGeoParams = {
@@ -27,7 +31,7 @@ const portfolioInfos = await getPortfolioLinks();
 const length = portfolioInfos.length / 4;
 console.time();
 
-let geometry = new CylinderGeometry(
+let cylinderGeo = new CylinderGeometry(
   cylinderGeoParams.radius,
   cylinderGeoParams.radius,
   cylinderGeoParams.height,
@@ -37,6 +41,13 @@ let geometry = new CylinderGeometry(
   cylinderGeoParams.thetaStart,
   cylinderGeoParams.thetaLength
 );
+const btnGeo = new PlaneGeometry(3, 1.5);
+const btnMat = new MeshBasicMaterial({
+  color: 0xff0fff,
+  side: DoubleSide,
+  transparent: true,
+  opacity: 0.5
+});
 for (let y = 0; y < length; y++) {
   const portfolioItem = new Group();
   for (let i = 0; i < 4; i++) {
@@ -45,17 +56,28 @@ for (let y = 0; y < length; y++) {
     const material = new MeshBasicMaterial({
       side: DoubleSide,
     });
-    const mesh = new Mesh(geometry, material);
-    mesh.userData = { ...portfolioInfos[idx] };
-    const texture = textureLoader.load(portfolioInfos[idx].img);
+    const cylinder = new Mesh(cylinderGeo, material);
+    const btn = new Mesh(btnGeo, btnMat);
+    btn.position.set(8.4, 0, 8.4);
+    btn.rotateY(Math.PI / 4);
+    gui.add(btn.position, "x", -50, 50, 0.1);
+    gui.add(btn.position, "z", -50, 50, 0.1);
+    gui.add(btn.rotation, "y", 0, Math.PI * 2, 0.1);
+    const cylinderGroup = new Group();
+    cylinderGroup.userData.isCylinderGroup = true;
+    btn.visible = false;
+    cylinderGroup.add(cylinder, btn);
+    btn.userData.link = portfolioInfos[idx].link;
+    cylinder.userData.img = portfolioInfos[idx].img;
+    const texture = textureLoader.load(cylinder.userData.img);
     texture.colorSpace = SRGBColorSpace;
     texture.center.set(0.5, 0.5);
     texture.flipY = false;
     texture.rotation = Math.PI;
-    mesh.material.map = texture;
-    mesh.name = `item-${y}-${i}`;
-    mesh.rotation.y = (i * Math.PI) / 2;
-    portfolioItem.add(mesh);
+    cylinder.material.map = texture;
+    cylinder.name = `item-${y}-${i}`;
+    cylinderGroup.rotation.y = (i * Math.PI) / 2;
+    portfolioItem.add(cylinderGroup);
   }
   portfolioItem.position.y = y * (cylinderGeoParams.height + 0.3);
   portfolioItem.rotation.y = Math.PI / 3 + Math.PI * Math.random();
@@ -68,7 +90,7 @@ portfolios.position.y = 5;
 const animate = () => {
   const elapsed = 0.002;
   portfolioItems.forEach((portfolioItem, idx) => {
-    portfolioItem.rotateY((idx % 2 == 0 ? -1 : 1) * elapsed);
+    // portfolioItem.rotateY((idx % 2 == 0 ? -1 : 1) * elapsed);
   });
   requestAnimationFrame(animate);
 };
