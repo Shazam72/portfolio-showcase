@@ -56,9 +56,10 @@ for (let y = 0; y < length; y++) {
     const material = new MeshBasicMaterial({
       side: DoubleSide,
     });
+
     const cylinder = new Mesh(cylinderGeo, material);
     const btn = new Mesh(btnGeo, btnMat);
-    btn.position.set(16.8, 0, 16.8);
+    btn.position.set(4.5, 0, 10.8);
     btn.rotateY(Math.PI / xOffset);
     const cylinderGroup = new Group();
     cylinderGroup.userData.isCylinderGroup = true;
@@ -76,16 +77,17 @@ for (let y = 0; y < length; y++) {
     cylinderGroup.rotation.y = (2 * (i * Math.PI)) / xOffset;
     portfolioItem.add(cylinderGroup);
   }
-  portfolioItem.position.y = y * (cylinderGeoParams.height + 0.3);
-  portfolioItem.rotation.y = Math.PI / 3 + Math.PI * Math.random();
+  portfolioItem.position.y =
+    y * (cylinderGeoParams.height + 0.3) -
+    (cylinderGeoParams.height * yOffset) / 2;
+  // portfolioItem.rotation.y = Math.PI / 3 + Math.PI * Math.random();
   portfolios.add(portfolioItem);
   portfolioItems.push(portfolioItem);
 }
 console.timeEnd();
-portfolios.position.y = 5;
 
 const animate = () => {
-  const elapsed = 0.002;
+  const elapsed = 0.0007;
   portfolioItems.forEach((portfolioItem, idx) => {
     portfolioItem.rotateY((idx % 2 == 0 ? -1 : 1) * elapsed);
   });
@@ -93,15 +95,5 @@ const animate = () => {
 };
 animate();
 
-export const onPortfolioHover = (
-  mesh: Mesh<CylinderGeometry, MeshBasicMaterial>
-) => {
-  mesh.material.color.set("gray");
-};
-export const onPortfolioHoverEnd = (
-  mesh: Mesh<CylinderGeometry, MeshBasicMaterial>
-) => {
-  mesh.material.color.set("");
-};
 
 export default portfolios;

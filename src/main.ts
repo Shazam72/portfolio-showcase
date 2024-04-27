@@ -2,13 +2,14 @@ import {
   Scene,
   WebGLRenderer,
   PerspectiveCamera,
-  AmbientLight,
-  Vector2,
   Raycaster,
+  Vector2,
+  Mesh,
+  BoxGeometry,
+  MeshNormalMaterial,
 } from "three";
 import "./style.css";
 import portfolios, { PortfolioCylinder } from "./portfolios";
-import gui from "./gui";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 const SIZES = {
@@ -22,24 +23,22 @@ const scene = new Scene();
 renderer.setPixelRatio(devicePixelRatio);
 renderer.setSize(SIZES.WIDTH, SIZES.HEIGHT);
 
-const camera = new PerspectiveCamera(30, SIZES.WIDTH / SIZES.HEIGHT);
-scene.add(camera);
-const d = new OrbitControls(camera, canvas);
-d.enableDamping = true;
-camera.position.set(0, 0, 3);
-d.update();
-gui.add(camera.position, "x", -100, 100, 0.5);
-gui.add(camera.position, "y", -100, 100, 0.5);
-gui.add(camera.position, "z", -100, 100, 0.5);
+const camera = new PerspectiveCamera(50, SIZES.WIDTH / SIZES.HEIGHT);
+camera.position.set(0, 0, 0.0001);
+const orbitControls = new OrbitControls(camera, canvas);
 
-const ambientLight = new AmbientLight();
-scene.add(ambientLight);
-gui.add(ambientLight, "intensity", 0, 100, 0.01);
+orbitControls.minPolarAngle = Math.PI / 2.5;
+orbitControls.maxPolarAngle = Math.PI / 1.8;
+
+scene.add(camera);
+
+const mesh = new Mesh(new BoxGeometry(), new MeshNormalMaterial());
+scene.add(mesh);
 
 scene.add(portfolios);
 
 const animate = () => {
-  d.update();
+  orbitControls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 };
