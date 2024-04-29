@@ -4,11 +4,11 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
-  PlaneGeometry,
   SRGBColorSpace,
   TextureLoader,
 } from "three";
 import { getPortfolioLinks } from "./getPortfolioLink";
+import { generateBtn } from "./btn";
 
 export type PortfolioCylinder = Mesh<CylinderGeometry, MeshBasicMaterial>;
 
@@ -22,13 +22,12 @@ const cylinderGeoParams = {
   heightSegments: 1,
   openEnded: true,
   thetaStart: 0,
-  thetaLength: Math.PI / 4.12,
+  thetaLength: Math.PI / 4.05,
 };
 const portfolios = new Group();
 const portfolioItems: Group[] = [];
 
-
-const generatePortfolios = async ()=>{
+const generatePortfolios = async () => {
   console.time();
   const portfolioInfos = await getPortfolioLinks();
   const length = portfolioInfos.length / xOffset;
@@ -43,31 +42,27 @@ const generatePortfolios = async ()=>{
     cylinderGeoParams.thetaStart,
     cylinderGeoParams.thetaLength
   );
-  const btnGeo = new PlaneGeometry(3, 1.5);
-  const btnMat = new MeshBasicMaterial({
-    color: 0xff0fff,
-    side: DoubleSide,
-    transparent: true,
-    opacity: 0.5,
-  });
+
   for (let y = 0; y < length; y++) {
     const portfolioItem = new Group();
     for (let i = 0; i < xOffset; i++) {
       const idx = y * 4 + i;
-  
+      
       const material = new MeshBasicMaterial({
         side: DoubleSide,
       });
-  
-      const cylinder = new Mesh(cylinderGeo, material);
-      const btn = new Mesh(btnGeo, btnMat);
-      btn.position.set(4.5, 0, 10.8);
-      btn.rotateY(Math.PI / xOffset);
+      
       const cylinderGroup = new Group();
       cylinderGroup.userData.isCylinderGroup = true;
+
+      const btn = generateBtn();
+      btn.position.set(4.5, 0, 10.8);
+      btn.rotateY(Math.PI / xOffset);
       btn.visible = false;
-      cylinderGroup.add(cylinder, btn);
       btn.userData.link = portfolioInfos[idx].link;
+
+      const cylinder = new Mesh(cylinderGeo, material);
+      cylinderGroup.add(cylinder, btn);
       cylinder.userData.img = portfolioInfos[idx].img;
       const texture = textureLoader.load(cylinder.userData.img);
       texture.colorSpace = SRGBColorSpace;
@@ -76,20 +71,21 @@ const generatePortfolios = async ()=>{
       texture.rotation = Math.PI;
       cylinder.material.map = texture;
       cylinder.name = `item-${y}-${i}`;
+
       cylinderGroup.rotation.y = (2 * (i * Math.PI)) / xOffset;
       portfolioItem.add(cylinderGroup);
     }
     portfolioItem.position.y =
-      y * (cylinderGeoParams.height + 0.3) -
+      y * (cylinderGeoParams.height + 0.1) -
       (cylinderGeoParams.height * yOffset) / 2;
     // portfolioItem.rotation.y = Math.PI / 3 + Math.PI * Math.random();
     portfolios.add(portfolioItem);
     portfolioItems.push(portfolioItem);
   }
   console.timeEnd();
-}
+};
 
-generatePortfolios()
+generatePortfolios();
 const animate = () => {
   const elapsed = 0.0007;
   portfolioItems.forEach((portfolioItem, idx) => {
@@ -98,6 +94,5 @@ const animate = () => {
   requestAnimationFrame(animate);
 };
 animate();
-
 
 export default portfolios;
