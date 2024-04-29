@@ -54,11 +54,16 @@ window.addEventListener("keydown", (evt) => {
 const pointer = new Vector2();
 const raycaster = new Raycaster();
 
-canvas.addEventListener("mousemove", (evt) => {
+const updatePointer = (evt: MouseEvent) => {
   pointer.x = (evt.clientX / innerWidth - 0.5) * 2;
   pointer.y = (0.5 - evt.clientY / innerHeight) * 2;
+};
+
+canvas.addEventListener("mousemove", (evt) => {
+  updatePointer(evt);
   raycaster.setFromCamera(pointer, camera);
   const intersected = raycaster.intersectObject(portfolios, true)[0]?.object;
+
   portfolios.children.forEach((portfolioItem) => {
     portfolioItem.children.forEach((cylinderGroup) => {
       const cylinder = cylinderGroup.children[0] as PortfolioCylinder;
@@ -66,16 +71,24 @@ canvas.addEventListener("mousemove", (evt) => {
       if (intersected?.id == cylinder.id || intersected?.id == btn?.id) {
         cylinder.material && cylinder.material.color.set("gray");
         btn && (btn.visible = true);
+
+        if (intersected?.id == btn?.id) {
+          btn.material.color.set("#0275d8");
+        } else {
+          btn.material.color.set("white");
+        }
       } else {
         cylinder.material && cylinder.material.color.set("white");
         btn && (btn.visible = false);
+       
       }
     });
   });
 });
+
 canvas.addEventListener("click", (evt) => {
-  pointer.x = (evt.clientX / innerWidth - 0.5) * 2;
-  pointer.y = (0.5 - evt.clientY / innerHeight) * 2;
+  updatePointer(evt);
+
   raycaster.setFromCamera(pointer, camera);
   const intersected = raycaster.intersectObject(portfolios, true)[0]?.object;
   portfolios.children.forEach((portfolioItem) => {
