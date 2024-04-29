@@ -1,5 +1,4 @@
 import {
-  BackSide,
   DoubleSide,
   Mesh,
   MeshBasicMaterial,
